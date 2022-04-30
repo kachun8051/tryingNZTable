@@ -3,7 +3,7 @@
     <button nz-button (click)="resetFilters()">Clear filters</button>
     <button nz-button (click)="resetSortAndFilters()">Clear filters and sorters</button>
   </div>
-  <nz-table #filterTable [nzData]="listOfData" nzTableLayout="fixed">
+  <nz-table *ngIf="isloaded"  #filterTable [nzData]="listOfData" nzTableLayout="fixed" >
     <thead>
       <tr>
         <th
