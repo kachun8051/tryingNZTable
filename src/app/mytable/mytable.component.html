@@ -2,6 +2,7 @@
     <button nz-button (click)="sortByAge()">Sort age</button>
     <button nz-button (click)="resetFilters()">Clear filters</button>
     <button nz-button (click)="resetSortAndFilters()">Clear filters and sorters</button>
+    <button nz-button (click)="onload()">Reset</button>
   </div>
   <nz-table *ngIf="isloaded"  #filterTable [nzData]="listOfData" nzTableLayout="fixed" >
     <thead>

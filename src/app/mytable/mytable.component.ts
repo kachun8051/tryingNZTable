@@ -17,6 +17,8 @@ export class MytableComponent implements OnInit {
   listOfData: DataItem[];
   listOfNameFilter: ColumnFilter[];
   listOfAddrFilter: ColumnFilter[];
+  //listOfNameFilter2: ColumnFilter[];
+  //listOfAddrFilter2: ColumnFilter[];
   // table required variables
   listOfColumns: ColumnItem[];
 
@@ -26,12 +28,18 @@ export class MytableComponent implements OnInit {
     // custom variables
     this.listOfData = [];
     this.listOfNameFilter = [];
-    this.listOfAddrFilter = [];   
+    this.listOfAddrFilter = []; 
+    //this.listOfNameFilter2 = [];
+    //this.listOfAddrFilter2 = [];  
     this.listOfColumns = [];
   }
 
   ngOnInit(): void {
-    this.onload().then(
+    this.onload();
+  }
+
+  onload(): void {
+    this.fetchdata().then(
       () => {
         // table required variables
         
@@ -60,31 +68,37 @@ export class MytableComponent implements OnInit {
         ];
         this.isloaded = true;
       }
-    );    
+    );
   }
 
   async httpcall(url: string, type: string): Promise<boolean> {
-
+    let ret: boolean = false;
     await new Promise(
       resolve => {
+        
         this.http.get<any>(url).subscribe(
           {
             next: (res) => {
               // console.log(res);
               switch (type){
                 case 'otherusers':
-                  console.log(type);
+                  console.log('type: '+type);
                   this.listOfData = res;
+                  ret = true;
                   resolve(true);
                   break;
                 case 'namefilters':
-                  console.log(type);
+                  console.log('type: '+type);
                   this.listOfNameFilter = res;
+                  //this.listOfNameFilter2 = res;
+                  ret = true;
                   resolve(true);
                   break;
                 case 'addrfilters':
-                  console.log(type);
+                  console.log('type: '+type);
                   this.listOfAddrFilter = res;
+                  //this.listOfAddrFilter2 = res;
+                  ret = true;
                   resolve(true);
                   break;
                 default:
@@ -102,11 +116,11 @@ export class MytableComponent implements OnInit {
       }
     );     
     
-    return false;
+    return ret;
   }
 
   // custom function added by wong ka chun
-  async onload(): Promise<boolean> {
+  async fetchdata(): Promise<boolean> {
     // you should start the json-server first
     // C:\users\user\json-server>json-server data.json
     let myurl1 = "http://localhost:3000/otherusers";
@@ -120,9 +134,6 @@ export class MytableComponent implements OnInit {
     console.log('isloaded3: ' + isloaded3);
     return (isloaded1 && isloaded2 && isloaded3 );
   }
-
-
-  // listOfColumns: ColumnItem[] = 
   
   trackByName(_: number, item: ColumnItem): string {
     return item.name;
@@ -137,19 +148,56 @@ export class MytableComponent implements OnInit {
       }
     });
   }
-
-  resetFilters(): void {
+  /*
+  watchIt(): void {
     this.listOfColumns.forEach(item => {
       if (item.name === 'Name') {
+
+      }
+    });
+  }
+  */
+
+  resetFilters(): void {
+    //this.isloaded = false;
+    this.listOfColumns.forEach(item => {
+      //console.log('resetFilters: ' + item);
+      if (item.name === 'Name') {
+        console.log('resetFilters 1 (Name): ' + this.listOfNameFilter.length);
+        this.listOfNameFilter.forEach(
+          elem => {
+            console.log("text1: " + elem.text + ", value1: " + elem.value );
+          }
+        );
+        console.log("Json1: " + JSON.stringify(this.listOfNameFilter));
+        item.listOfFilter.forEach(
+          //console.log('resetFilters 2 (Name): ');
+          elem => {
+            console.log("text2: " + elem.text + ", value2: " + elem.value );
+          }
+        );
+        console.log("Json2: " + JSON.stringify(item.listOfFilter));
+        //console.log('text: ');
+        //item.listOfFilter = [];
         item.listOfFilter = this.listOfNameFilter;
+        //this.isloaded = true;
       } else if (item.name === 'Address') {
+        console.log('resetFilters (Address): ' + this.listOfAddrFilter.length);
+        this.listOfAddrFilter.forEach(
+          elem => {
+            console.log("text: " + elem.text + ", value: " + elem.value );
+          }
+        );
         item.listOfFilter = this.listOfAddrFilter;
+        //this.isloaded = true;
       }
     });
   }
 
   resetSortAndFilters(): void {
+    
     this.listOfColumns.forEach(item => {
+      //console.log('resetSortAndFilters: ' + item);
       item.sortOrder = null;
     });
     this.resetFilters();

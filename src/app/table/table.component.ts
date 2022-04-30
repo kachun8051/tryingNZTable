@@ -97,15 +97,19 @@ export class TableComponent implements OnInit {
   resetFilters(): void {
     this.listOfColumns.forEach(item => {
       if (item.name === 'Name') {
+        /*
         item.listOfFilter = [
           { text: 'Joe', value: 'Joe' },
           { text: 'Jim', value: 'Jim' }
         ];
+        */
       } else if (item.name === 'Address') {
+        /*
         item.listOfFilter = [
           { text: 'London', value: 'London' },
           { text: 'Sidney', value: 'Sidney' }
         ];
+        */
       }
     });
   }
