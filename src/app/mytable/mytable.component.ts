@@ -17,8 +17,6 @@ export class MytableComponent implements OnInit {
   listOfData: DataItem[];
   listOfNameFilter: ColumnFilter[];
   listOfAddrFilter: ColumnFilter[];
-  //listOfNameFilter2: ColumnFilter[];
-  //listOfAddrFilter2: ColumnFilter[];
   // table required variables
   listOfColumns: ColumnItem[];
 
@@ -28,9 +26,7 @@ export class MytableComponent implements OnInit {
     // custom variables
     this.listOfData = [];
     this.listOfNameFilter = [];
-    this.listOfAddrFilter = []; 
-    //this.listOfNameFilter2 = [];
-    //this.listOfAddrFilter2 = [];  
+    this.listOfAddrFilter = [];  
     this.listOfColumns = [];
   }
 
@@ -41,8 +37,6 @@ export class MytableComponent implements OnInit {
   onload(): void {
     this.fetchdata().then(
       () => {
-        // table required variables
-        
         this.listOfColumns = [
           {
             name: 'Name',
@@ -74,12 +68,10 @@ export class MytableComponent implements OnInit {
   async httpcall(url: string, type: string): Promise<boolean> {
     let ret: boolean = false;
     await new Promise(
-      resolve => {
-        
+      resolve => {        
         this.http.get<any>(url).subscribe(
           {
             next: (res) => {
-              // console.log(res);
               switch (type){
                 case 'otherusers':
                   console.log('type: '+type);
@@ -90,14 +82,12 @@ export class MytableComponent implements OnInit {
                 case 'namefilters':
                   console.log('type: '+type);
                   this.listOfNameFilter = res;
-                  //this.listOfNameFilter2 = res;
                   ret = true;
                   resolve(true);
                   break;
                 case 'addrfilters':
                   console.log('type: '+type);
                   this.listOfAddrFilter = res;
-                  //this.listOfAddrFilter2 = res;
                   ret = true;
                   resolve(true);
                   break;
@@ -108,31 +98,31 @@ export class MytableComponent implements OnInit {
             },
             error: (err) => {
               console.log("Server call (1) failed: " + err);
-              //return false;
               resolve(false);
             }
           }
         );
       }
-    );     
-    
+    );
     return ret;
   }
 
   // custom function added by wong ka chun
   async fetchdata(): Promise<boolean> {
     // you should start the json-server first
-    // C:\users\user\json-server>json-server data.json
-    let myurl1 = "http://localhost:3000/otherusers";
-    let myurl2 = "http://localhost:3000/namefilters";
-    let myurl3 = "http://localhost:3000/addrfilters";
-    let isloaded1: boolean = await this.httpcall(myurl1, 'otherusers');
-    console.log('isloaded1: ' + isloaded1);
-    let isloaded2: boolean = await this.httpcall(myurl2, 'namefilters');
-    console.log('isloaded2: ' + isloaded2);
-    let isloaded3: boolean = await this.httpcall(myurl3, 'addrfilters');
-    console.log('isloaded3: ' + isloaded3);
-    return (isloaded1 && isloaded2 && isloaded3 );
+    // C:\users\user\json-server>json-server data.json    
+    let myloaded = true;
+    let url = "http://localhost:3000/";
+    let urls = ["otherusers", "namefilters", "addrfilters"];
+
+    let i = 0;
+    for (i = 0; i<urls.length; i++){
+      let myurl = url + urls[i];
+      let isloaded: boolean = await this.httpcall(myurl, urls[i]);
+      myloaded = myloaded && isloaded;
+      console.log('isloaded (' + urls[i] + '): ' + isloaded);
+    }
+    return myloaded;
   }
   
   trackByName(_: number, item: ColumnItem): string {
@@ -148,39 +138,15 @@ export class MytableComponent implements OnInit {
       }
     });
   }
-  /*
-  watchIt(): void {
-    this.listOfColumns.forEach(item => {
-      if (item.name === 'Name') {
-
-      }
-    });
-  }
-  */
 
   resetFilters(): void {
     //this.isloaded = false;
-    this.listOfColumns.forEach(item => {
+    this.listOfColumns.forEach( async item => {
       //console.log('resetFilters: ' + item);
       if (item.name === 'Name') {
-        console.log('resetFilters 1 (Name): ' + this.listOfNameFilter.length);
-        this.listOfNameFilter.forEach(
-          elem => {
-            console.log("text1: " + elem.text + ", value1: " + elem.value );
-          }
-        );
-        console.log("Json1: " + JSON.stringify(this.listOfNameFilter));
-        item.listOfFilter.forEach(
-          //console.log('resetFilters 2 (Name): ');
-          elem => {
-            console.log("text2: " + elem.text + ", value2: " + elem.value );
-          }
-        );
-        console.log("Json2: " + JSON.stringify(item.listOfFilter));
-        //console.log('text: ');
-        //item.listOfFilter = [];
+        // fetch the namefilters again from server        
+        let isloaded: boolean = await this.httpcall("http://localhost:3000/namefilters", "namefilters");
         item.listOfFilter = this.listOfNameFilter;
-        //this.isloaded = true;
       } else if (item.name === 'Address') {
         console.log('resetFilters (Address): ' + this.listOfAddrFilter.length);
         this.listOfAddrFilter.forEach(
@@ -188,8 +154,9 @@ export class MytableComponent implements OnInit {
             console.log("text: " + elem.text + ", value: " + elem.value );
           }
         );
+        // fetch the addrfilters again from server        
+        let isloaded: boolean = await this.httpcall("http://localhost:3000/addrfilters", "addrfilters");
         item.listOfFilter = this.listOfAddrFilter;
-        //this.isloaded = true;
       }
     });
   }
