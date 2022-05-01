@@ -11,7 +11,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TableComponent } from './table/table.component';
 import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { MytableComponent } from './mytable/mytable.component';
+import { MyexpandtableComponent } from './myexpandtable/myexpandtable.component';
 
 registerLocaleData(en);
 
@@ -19,7 +23,8 @@ registerLocaleData(en);
   declarations: [
     AppComponent,
     TableComponent,
-    MytableComponent
+    MytableComponent,
+    MyexpandtableComponent
   ],
   imports: [
     BrowserModule,
@@ -27,6 +32,9 @@ registerLocaleData(en);
     HttpClientModule,
     BrowserAnimationsModule,
     NzTableModule,
+    NzBadgeModule,
+    NzDropDownModule,
+    NzDividerModule
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent]
